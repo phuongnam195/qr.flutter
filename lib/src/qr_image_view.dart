@@ -21,7 +21,7 @@ class QrImageView extends StatefulWidget {
   /// using the default options).
   QrImageView({
     required String data,
-    super.key,
+    Key? key,
     this.size,
     this.padding = const EdgeInsets.all(10.0),
     this.backgroundColor = Colors.transparent,
@@ -42,20 +42,20 @@ class QrImageView extends StatefulWidget {
       color: Colors.black,
     ),
     this.embeddedImageEmitsError = false,
-    @Deprecated('use colors in eyeStyle and dataModuleStyle instead')
-        this.foregroundColor,
+    @Deprecated('use colors in eyeStyle and dataModuleStyle instead') this.foregroundColor,
   })  : assert(
           QrVersions.isSupportedVersion(version),
           'QR code version $version is not supported',
         ),
         _data = data,
-        _qrCode = null;
+        _qrCode = null,
+        super(key: key);
 
   /// Create a new QR code using the [QrCode] data and the passed options (or
   /// using the default options).
   QrImageView.withQr({
     required QrCode qr,
-    super.key,
+    Key? key,
     this.size,
     this.padding = const EdgeInsets.all(10.0),
     this.backgroundColor = Colors.transparent,
@@ -76,14 +76,14 @@ class QrImageView extends StatefulWidget {
       color: Colors.black,
     ),
     this.embeddedImageEmitsError = false,
-    @Deprecated('use colors in eyeStyle and dataModuleStyle instead')
-        this.foregroundColor,
+    @Deprecated('use colors in eyeStyle and dataModuleStyle instead') this.foregroundColor,
   })  : assert(
           QrVersions.isSupportedVersion(version),
           'QR code version $version is not supported',
         ),
         _data = null,
-        _qrCode = qr;
+        _qrCode = qr,
+        super(key: key);
 
   // The data passed to the widget
   final String? _data;
@@ -174,8 +174,7 @@ class _QrImageViewState extends State<QrImageView> {
       _qr = _validationResult.isValid ? _validationResult.qrCode : null;
     } else if (widget._qrCode != null) {
       _qr = widget._qrCode;
-      _validationResult =
-          QrValidationResult(status: QrValidationStatus.valid, qrCode: _qr);
+      _validationResult = QrValidationResult(status: QrValidationStatus.valid, qrCode: _qr);
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -184,8 +183,7 @@ class _QrImageViewState extends State<QrImageView> {
           return _errorWidget(context, constraints, _validationResult.error);
         }
         // no error, build the regular widget
-        final widgetSize =
-            widget.size ?? constraints.biggest.shortestSide;
+        final widgetSize = widget.size ?? constraints.biggest.shortestSide;
         if (widget.embeddedImage != null) {
           // if requesting to embed an image then we need to load via a
           // FutureBuilder because the image provider will be async.
@@ -239,12 +237,9 @@ class _QrImageViewState extends State<QrImageView> {
     BoxConstraints constraints,
     Object? error,
   ) {
-    final errorWidget = widget.errorStateBuilder == null
-        ? Container()
-        : widget.errorStateBuilder!(context, error);
-    final errorSideLength = widget.constrainErrorBounds
-        ? widget.size ?? constraints.biggest.shortestSide
-        : constraints.biggest.longestSide;
+    final errorWidget = widget.errorStateBuilder == null ? Container() : widget.errorStateBuilder!(context, error);
+    final errorSideLength =
+        widget.constrainErrorBounds ? widget.size ?? constraints.biggest.shortestSide : constraints.biggest.longestSide;
     return _QrContentView(
       edgeLength: errorSideLength,
       backgroundColor: widget.backgroundColor,
